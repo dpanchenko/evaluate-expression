@@ -21,15 +21,6 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## Run tests
+## Open swagger doc
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
+Open in browser `http://localhost:3333/docs`

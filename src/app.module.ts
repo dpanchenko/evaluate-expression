@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { EvaluationWorkerHost } from './evaluation';
 import { getConfig } from './config';
 import { AppController } from './controllers';
 import { AppService, EvaluationService } from './services';
@@ -14,6 +13,6 @@ import { AppService, EvaluationService } from './services';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService, EvaluationService, EvaluationWorkerHost],
+  providers: [AppService, EvaluationService],
 })
 export class AppModule {}
