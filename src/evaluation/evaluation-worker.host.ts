@@ -1,32 +1,25 @@
 import { Injectable, OnApplicationBootstrap, OnApplicationShutdown } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { join } from 'path';
-import { filter, firstValueFrom, fromEvent, map, Observable } from 'rxjs';
+import { finalize, firstValueFrom, fromEvent, map, Observable } from 'rxjs';
 import { Worker } from 'worker_threads';
 import { IEvaluationResult } from './types';
 
 @Injectable()
-export class EvaluationWorkerHost implements OnApplicationBootstrap, OnApplicationShutdown {
-  private worker: Worker;
-  private messages$: Observable<IEvaluationResult>;
-
-  onApplicationBootstrap() {
-    this.worker = new Worker(join(__dirname, 'evaluation-worker.js'));
-    this.messages$ = fromEvent(this.worker, 'message') as Observable<IEvaluationResult>;
-  }
-
-  async onApplicationShutdown() {
-    this.worker.terminate();
-  }
-
+export class EvaluationWorkerHost {
   async run(expression: string): Promise<number> {
+    const worker = new Worker(join(__dirname, 'evaluation-worker.js'));
+    const messages$ = fromEvent(worker, 'message') as Observable<IEvaluationResult>;
+
+    worker.on('error', (e) => console.log('on error', e));
+
     const uuid = randomUUID();
-    this.worker.postMessage({ expression, id: uuid });
+    worker.postMessage({ expression, id: uuid });
 
     return firstValueFrom<number>(
-      this.messages$.pipe(
-        filter(({ id }) => id === uuid),
+      messages$.pipe(
         map(({ result }) => result),
+        finalize(() => worker.terminate()),
       ),
     );
   }

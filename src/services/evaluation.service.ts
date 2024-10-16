@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { EvaluationWorkerHost } from '../evaluation';
-// import Piscina from 'piscina';
-// import { resolve } from 'path';
 
 @Injectable()
 export class EvaluationService {
